@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/models/session.dart';
 
 class SessionCard extends StatelessWidget {
-  final MeditationSession session;
+  final Session session;
   final VoidCallback onTap;
   final VoidCallback? onFavoriteTap;
 
@@ -10,17 +10,16 @@ class SessionCard extends StatelessWidget {
     super.key,
     required this.session,
     required this.onTap,
-    required this.onFavoriteTap,
+    this.onFavoriteTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         onTap: onTap,
         title: Text(session.title),
-        subtitle: Text('${session.durationMinutes} min • ${session.category}'),
+        subtitle: Text('${session.duration} min • ${session.category}'),
         trailing: IconButton(
           onPressed: onFavoriteTap,
           icon: Icon(
@@ -32,5 +31,3 @@ class SessionCard extends StatelessWidget {
     );
   }
 }
-
-

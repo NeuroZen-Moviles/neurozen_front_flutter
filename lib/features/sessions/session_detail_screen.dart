@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/models/session.dart';
 
 class SessionDetailScreen extends StatelessWidget {
-  final MeditationSession session;
+  final Session session;
   final VoidCallback onToggleFavorite;
 
   const SessionDetailScreen({
@@ -27,7 +27,7 @@ class SessionDetailScreen extends StatelessWidget {
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('${session.durationMinutes} min • ${session.level}'),
+            Text('${session.duration} min • ${session.level}'),
             const SizedBox(height: 16),
             Text(session.description),
             const SizedBox(height: 24),
@@ -39,11 +39,6 @@ class SessionDetailScreen extends StatelessWidget {
               label: Text(
                 session.isFavorite ? 'Quitar favorito' : 'Agregar favorito',
               ),
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: () {},
-              child: const Text('Completar sesión'),
             ),
           ],
         ),

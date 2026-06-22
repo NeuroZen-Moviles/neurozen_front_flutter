@@ -3,15 +3,13 @@ import 'package:neurozen_front/core/models/session.dart';
 import 'package:neurozen_front/features/sessions/widgets/session_card.dart';
 
 class SessionsScreen extends StatefulWidget {
-  final List<MeditationSession> sessions;
-  final List<MeditationSession> favoriteSessions;
+  final List<Session> sessions;
   final ValueChanged<String> onToggleFavorite;
-  final ValueChanged<MeditationSession> onSessionTap;
+  final ValueChanged<Session> onSessionTap;
 
   const SessionsScreen({
     super.key,
     required this.sessions,
-    required this.favoriteSessions,
     required this.onToggleFavorite,
     required this.onSessionTap,
   });
@@ -25,7 +23,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final visible = onlyFavorites ? widget.favoriteSessions : widget.sessions;
+    final visible = onlyFavorites
+        ? widget.sessions.where((s) => s.isFavorite).toList()
+        : widget.sessions;
 
     return SafeArea(
       child: Column(
@@ -44,26 +44,27 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 FilterChip(
                   label: const Text('Solo favoritos'),
                   selected: onlyFavorites,
-                  onSelected: (value) => setState(() => onlyFavorites = value),
+                  onSelected: (v) => setState(() => onlyFavorites = v),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: visible.isEmpty
-                ? const Center(child: Text('No tienes sesiones favoritas aún.'))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: visible.length,
-                    itemBuilder: (_, i) {
-                      final s = visible[i];
-                      return SessionCard(
-                        session: s,
-                        onTap: () => widget.onSessionTap(s),
-                        onFavoriteTap: () => widget.onToggleFavorite(s.id),
-                      );
-                    },
-                  ),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: visible.length,
+              itemBuilder: (_, i) {
+                final s = visible[i];
+                return SessionCard(
+                  session: s,
+                  onTap: () => widget.onSessionTap(s),
+                  onFavoriteTap: () {
+                    widget.onToggleFavorite(s.id);
+                    setState(() {});
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
