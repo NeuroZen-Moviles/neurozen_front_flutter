@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:neurozen_front/core/mocks/mock_sessions.dart';
-import 'package:neurozen_front/core/models/session.dart';
-import '../home/home_screen.dart';
-import '../sessions/sessions_screen.dart';
-import '../sessions/session_detail_screen.dart';
+import 'package:neurozen_front/core/mocks/mock_data.dart';
+import 'package:neurozen_front/core/models/availability_slot.dart';
+import 'package:neurozen_front/features/home/home_screen.dart';
+import 'package:neurozen_front/features/patients/patient_screen.dart';
+import 'package:neurozen_front/features/profile/profile_screen.dart';
+import 'package:neurozen_front/features/schedule/schedule_screen.dart';
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  final VoidCallback onLogout;
+
+  const MainShell({super.key, required this.onLogout});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -14,46 +17,28 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int index = 0;
-  List<Session> sessions = List.of(mockSessions);
-
-  void toggleFav(String id) {
-    setState(() {
-      final i = sessions.indexWhere((e) => e.id == id);
-      sessions[i] = sessions[i].copyWith(isFavorite: !sessions[i].isFavorite);
-    });
-  }
-
-  void openDetail(Session s) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SessionDetailScreen(
-          session: s,
-          onToggleFavorite: () => toggleFav(s.id),
-        ),
-      ),
-    ).then((_) => setState(() {}));
-  }
+  final availability = List<AvailabilitySlot>.from(mockAvailability);
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomeScreen(
-        recommended: sessions.take(3).toList(),
-        onSessionTap: openDetail,
+      HomePsychologistScreen(
+        psychologist: mockPsychologist,
+        patients: mockPatients,
       ),
-      SessionsScreen(
-        sessions: sessions,
-        onToggleFavorite: toggleFav,
-        onSessionTap: openDetail,
+      PatientsScreen(patients: mockPatients),
+      ScheduleScreen(
+        availability: availability,
+        onUpdate: () => setState(() {}),
       ),
+      ProfileScreen(psychologist: mockPsychologist, onLogout: widget.onLogout),
     ];
 
     return Scaffold(
       body: pages[index],
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
-        onDestinationSelected: (v) => setState(() => index = v),
+        onDestinationSelected: (i) => setState(() => index = i),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -61,9 +46,19 @@ class _MainShellState extends State<MainShell> {
             label: 'Inicio',
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Sesiones',
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'Pacientes',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.schedule_outlined),
+            selectedIcon: Icon(Icons.schedule),
+            label: 'Horario',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
       ),
