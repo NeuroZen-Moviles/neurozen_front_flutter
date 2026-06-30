@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neurozen_front/app/theme.dart';
-import 'package:neurozen_front/features/shell/main_shell.dart';
+import 'package:neurozen_front/features/root/app_root.dart';
 
 class NeurozenApp extends StatelessWidget {
   const NeurozenApp({super.key});
@@ -10,8 +9,12 @@ class NeurozenApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Neurozen',
-      theme: neurozenTheme,
-      home: const MainShell(),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5FAF7A)),
+        scaffoldBackgroundColor: const Color(0xFFF5FBF6),
+      ),
+      home: const AppRoot(),
     );
   }
 }
