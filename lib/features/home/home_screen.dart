@@ -1,51 +1,112 @@
 import 'package:flutter/material.dart';
-import 'package:neurozen_front/core/models/session.dart';
-import 'package:neurozen_front/features/sessions/widgets/session_card.dart';
+import 'package:neurozen_front/core/models/patient.dart';
+import 'package:neurozen_front/core/models/psychologist.dart';
+import 'package:neurozen_front/utils/date_format.dart';
 
-class HomeScreen extends StatelessWidget {
-  final List<Session> recommended;
-  final ValueChanged<Session> onSessionTap;
+class HomePsychologistScreen extends StatelessWidget {
+  final Psychologist psychologist;
+  final List<Patient> patients;
 
-  const HomeScreen({
+  const HomePsychologistScreen({
     super.key,
-    required this.recommended,
-    required this.onSessionTap,
+    required this.psychologist,
+    required this.patients,
   });
 
   @override
   Widget build(BuildContext context) {
+    final todayCount = patients
+        .where(
+          (p) =>
+              p.nextAppointment.day == DateTime.now().day &&
+              p.nextAppointment.month == DateTime.now().month &&
+              p.nextAppointment.year == DateTime.now().year,
+        )
+        .length;
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Hola 👋',
+            'Hola, ${psychologist.name}',
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text('¿Cómo te sientes hoy?'),
+          Text(psychologist.specialty),
           const SizedBox(height: 16),
-          const Card(
-            color: Color(0xFFE7F7EC),
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Estrés: Bajo • Energía: Media • Sueño: 7h'),
-            ),
+
+          Row(
+            children: [
+              Expanded(
+                child: _MetricCard(title: 'Citas hoy', value: '$todayCount'),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _MetricCard(
+                  title: 'Pacientes activos',
+                  value: '${patients.length}',
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
+
           Text(
-            'Sesiones recomendadas',
+            'Próximas citas',
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 10),
-          ...recommended.map(
-            (s) => SessionCard(session: s, onTap: () => onSessionTap(s)),
-          ),
+          const SizedBox(height: 8),
+
+          ...patients
+              .take(3)
+              .map(
+                (p) => Card(
+                  child: ListTile(
+                    leading: const CircleAvatar(child: Icon(Icons.person)),
+                    title: Text(p.name),
+                    subtitle: Text(
+                      '${p.reason} • ${fmtDateTime(p.nextAppointment)}',
+                    ),
+                    trailing: Text(p.status),
+                  ),
+                ),
+              ),
         ],
+      ),
+    );
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const _MetricCard({required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFE6F6EA),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }
