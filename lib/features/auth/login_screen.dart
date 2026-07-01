@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Acceso Psicólogos',
+                'NeuroZen Psicólogos',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
