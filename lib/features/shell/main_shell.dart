@@ -27,10 +27,7 @@ class _MainShellState extends State<MainShell> {
         patients: mockPatients,
       ),
       PatientsScreen(patients: mockPatients),
-      ScheduleScreen(
-        availability: availability,
-        onUpdate: () => setState(() {}),
-      ),
+      ScheduleScreen(),
       ProfileScreen(psychologist: mockPsychologist, onLogout: widget.onLogout),
     ];
 
