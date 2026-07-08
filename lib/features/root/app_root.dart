@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:neurozen_front/core/network/api_client.dart';
+import 'package:neurozen_front/core/storage/session_storage.dart';
+import 'package:neurozen_front/features/auth/data/auth_repo.dart';
 import 'package:neurozen_front/features/auth/login_screen.dart';
 import 'package:neurozen_front/features/shell/main_shell.dart';
 
@@ -10,15 +13,50 @@ class AppRoot extends StatefulWidget {
 }
 
 class _AppRootState extends State<AppRoot> {
-  bool isLoggedIn = false;
+  late final SessionStorage storage;
+  late final ApiClient apiClient;
+  late final AuthRepository authRepository;
 
-  void _onLoginSuccess() => setState(() => isLoggedIn = true);
-  void _onLogout() => setState(() => isLoggedIn = false);
+  bool loading = true;
+  bool loggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    storage = SessionStorage();
+    apiClient = ApiClient(storage);
+    authRepository = AuthRepository(apiClient: apiClient, storage: storage);
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    final ok = await storage.isLoggedIn();
+    final token = await storage.readToken();
+    setState(() {
+      loggedIn = ok && token != null && token.isNotEmpty;
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return isLoggedIn
-        ? MainShell(onLogout: _onLogout)
-        : LoginScreen(onLoginSuccess: _onLoginSuccess);
+    if (loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (!loggedIn) {
+      return LoginScreen(
+        authRepository: authRepository,
+        onLoginSuccess: () => setState(() => loggedIn = true),
+      );
+    }
+
+    return MainShell(
+      onLogout: () async {
+        await authRepository.logout();
+        if (!mounted) return;
+        setState(() => loggedIn = false);
+      },
+    );
   }
 }

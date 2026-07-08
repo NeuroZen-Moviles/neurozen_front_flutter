@@ -134,8 +134,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                               context: context,
                               initialTime: slot.start,
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setState(() => slot.start = picked);
+                            }
                           },
                           child: Text('Inicio: ${slot.start.format(context)}'),
                         ),
@@ -148,8 +149,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                               context: context,
                               initialTime: slot.end,
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setState(() => slot.end = picked);
+                            }
                           },
                           child: Text('Fin: ${slot.end.format(context)}'),
                         ),
@@ -232,8 +234,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                                   e.start ??
                                   const TimeOfDay(hour: 9, minute: 0),
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setState(() => e.start = picked);
+                            }
                           },
                           child: Text(
                             'Inicio: ${exception?.start?.format(context) ?? "--:--"}',
