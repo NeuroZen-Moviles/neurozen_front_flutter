@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:neurozen_front/core/storage/session_storage.dart';
 import 'package:neurozen_front/features/auth/data/auth_repo.dart';
 import 'package:neurozen_front/features/auth/register_screen.dart';
 import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthRepository authRepository;
+  final SessionStorage storage;
   final ProfessionalsRepository professionalsRepository;
   final VoidCallback onLoginSuccess;
 
@@ -12,6 +14,7 @@ class LoginScreen extends StatefulWidget {
     super.key,
     required this.authRepository,
     required this.professionalsRepository,
+    required this.storage,
     required this.onLoginSuccess,
   });
 
@@ -26,7 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool obscure = true;
 
   Future<void> _submit() async {
-    if (usernameCtrl.text.trim().isEmpty || passwordCtrl.text.isEmpty) {
+    final username = usernameCtrl.text.trim();
+    if (username.isEmpty || passwordCtrl.text.isEmpty) {
       _show('Completa usuario y contraseña');
       return;
     }
@@ -37,6 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
         username: usernameCtrl.text.trim(),
         password: passwordCtrl.text,
       );
+
+      debugPrint("SignIn OK");
+
+      await widget.storage.saveUsername(username);
       widget.onLoginSuccess();
     } catch (e) {
       final msg = e.toString();
@@ -139,6 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (_) => RegisterScreen(
                             authRepository: widget.authRepository,
                             professionalsRepo: widget.professionalsRepository,
+                            storage: widget.storage,
                           ),
                         ),
                       );

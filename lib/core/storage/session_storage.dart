@@ -12,6 +12,7 @@ class SessionStorage {
   static const _kAvailabilityCache = 'availability_cache';
   static const _kProfileCache = 'psychologist_profile_cache';
   static const _kProfileCompleted = 'profile_completed';
+  static const _kUsername = 'username';
 
   Future<void> saveSession({
     required String token,
@@ -78,5 +79,15 @@ class SessionStorage {
     final prefs = await SharedPreferences.getInstance();
 
     return prefs.getBool(_kProfileCompleted) ?? false;
+  }
+
+  Future<void> saveUsername(String username) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kUsername, username);
+  }
+
+  Future<String?> readUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kUsername);
   }
 }

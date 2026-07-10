@@ -1,15 +1,19 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:neurozen_front/core/storage/session_storage.dart';
 import 'package:neurozen_front/features/auth/data/auth_repo.dart';
 import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
 
 class RegisterScreen extends StatefulWidget {
   final AuthRepository authRepository;
   final ProfessionalsRepository professionalsRepo;
+  final SessionStorage storage;
 
   const RegisterScreen({
     super.key,
     required this.authRepository,
     required this.professionalsRepo,
+    required this.storage,
   });
 
   @override
@@ -73,6 +77,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: password,
       );
 
+      debugPrint("SignIn OK");
+
+      await widget.storage.saveUsername(username);
+
       debugPrint('Usuario creado');
 
       await widget.professionalsRepo.createProfessional(
@@ -80,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: email,
         specialty: selectedSpecialty,
         availability: "0",
-        experience: 0,
+        experience: "0",
         price: 0,
         rating: 0,
         reviews: 0,
@@ -97,9 +105,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       Navigator.pop(context);
+    } on DioException catch (e, stackTrace) {
+      debugPrint("STATUS: ${e.response?.statusCode}");
+      debugPrint("BODY: ${e.response?.data}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      _show(e.response?.data.toString() ?? e.toString());
     } catch (e, stackTrace) {
-      debugPrint('ERROR: $e');
-      debugPrint('$stackTrace');
+      debugPrint("ERROR: $e");
+      debugPrintStack(stackTrace: stackTrace);
 
       _show(e.toString());
     } finally {

@@ -30,7 +30,6 @@ class _MainShellState extends State<MainShell> {
   Psychologist? psychologist;
   bool loading = true;
   final availability = List<AvailabilitySlot>.from(mockAvailability);
-  final psychologistId = '08d73aee-4d88-4aef-95ab-fa949d334e56';
 
   @override
   void initState() {
@@ -40,12 +39,22 @@ class _MainShellState extends State<MainShell> {
 
   Future<void> _loadPsychologist() async {
     try {
-      var result = await widget.professionalsRepository.getById(psychologistId);
+      final username = await widget.storage.readUsername();
+
+      if (username == null) {
+        throw Exception("No hay usuario en la sesión");
+      }
+
+      final professionals = await widget.professionalsRepository.getAll();
+
+      final result = professionals.firstWhere((p) => p.name == username);
 
       final cache = await widget.storage.readProfileCache();
 
+      Psychologist psychologistData = result;
+
       if (cache != null) {
-        result = Psychologist(
+        psychologistData = Psychologist(
           id: result.id,
           name: result.name,
           email: result.email,
@@ -63,7 +72,7 @@ class _MainShellState extends State<MainShell> {
       if (!mounted) return;
 
       setState(() {
-        psychologist = result;
+        psychologist = psychologistData;
         loading = false;
       });
     } catch (e, stackTrace) {

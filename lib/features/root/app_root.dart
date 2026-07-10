@@ -50,6 +50,7 @@ class _AppRootState extends State<AppRoot> {
     if (!loggedIn) {
       return LoginScreen(
         authRepository: authRepository,
+        storage: storage,
         professionalsRepository: professionalsRepository,
         onLoginSuccess: () => setState(() => loggedIn = true),
       );
