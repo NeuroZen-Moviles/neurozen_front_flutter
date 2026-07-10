@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:neurozen_front/features/auth/data/auth_repo.dart';
+import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
 
 class RegisterScreen extends StatefulWidget {
   final AuthRepository authRepository;
+  final ProfessionalsRepository professionalsRepo;
 
-  const RegisterScreen({super.key, required this.authRepository});
+  const RegisterScreen({
+    super.key,
+    required this.authRepository,
+    required this.professionalsRepo,
+  });
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -17,6 +23,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool loading = false;
   bool obscure1 = true;
+  String? selectedSpecialty;
+
+  final List<String> specialties = [
+    'Psicología Clínica',
+    'Psicología Infantil',
+    'Psicología Educativa',
+    'Psicología Organizacional',
+    'Neuropsicología',
+    'Psicología Familiar',
+    'Psicología de Pareja',
+    'Psicología del Adulto Mayor',
+  ];
 
   Future<void> _submit() async {
     final username = usernameCtrl.text.trim();
@@ -36,21 +54,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (selectedSpecialty == null) {
+      _show('Selecciona una especialidad');
+      return;
+    }
     setState(() => loading = true);
     try {
+      debugPrint('Creando usuario...');
+
       await widget.authRepository.signUp(
         username: username,
         password: password,
         email: email,
       );
 
+      await widget.authRepository.signIn(
+        username: username,
+        password: password,
+      );
+
+      debugPrint('Usuario creado');
+
+      await widget.professionalsRepo.createProfessional(
+        name: username,
+        email: email,
+        specialty: selectedSpecialty,
+        availability: "0",
+        experience: 0,
+        price: 0,
+        rating: 0,
+        reviews: 0,
+        bio: "Insertar bio",
+        image: "Insertar img",
+      );
+
+      debugPrint('Profesional creado');
+
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cuenta creada correctamente')),
       );
+
       Navigator.pop(context);
-    } catch (e) {
-      _show(_mapError(e));
+    } catch (e, stackTrace) {
+      debugPrint('ERROR: $e');
+      debugPrint('$stackTrace');
+
+      _show(e.toString());
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -81,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextField(
               controller: usernameCtrl,
               decoration: const InputDecoration(
-                labelText: 'Usuario',
+                labelText: 'Nombre completo',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -103,11 +154,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: emailCtrl,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 12),
+
+            DropdownButtonFormField<String>(
+              initialValue: selectedSpecialty,
+              decoration: const InputDecoration(
+                labelText: 'Especialidad',
+                border: OutlineInputBorder(),
+              ),
+              items: specialties.map((specialty) {
+                return DropdownMenuItem<String>(
+                  value: specialty,
+                  child: Text(specialty),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedSpecialty = value;
+                });
+              },
+            ),
+
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,

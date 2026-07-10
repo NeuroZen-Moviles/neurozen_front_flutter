@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:neurozen_front/features/auth/data/auth_repo.dart';
 import 'package:neurozen_front/features/auth/register_screen.dart';
+import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthRepository authRepository;
+  final ProfessionalsRepository professionalsRepository;
   final VoidCallback onLoginSuccess;
 
   const LoginScreen({
     super.key,
     required this.authRepository,
+    required this.professionalsRepository,
     required this.onLoginSuccess,
   });
 
@@ -59,8 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final text = e.toString().toLowerCase();
     if (text.contains('401')) return 'Credenciales inválidas';
     if (text.contains('400')) return 'Solicitud inválida';
-    if (text.contains('socket') || text.contains('timeout'))
+    if (text.contains('socket') || text.contains('timeout')) {
       return 'Sin conexión con el servidor';
+    }
     return 'No se pudo iniciar sesión';
   }
 
@@ -83,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Acceso Psicólogos',
+              'NeuroZen Psicólogos',
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -134,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(
                           builder: (_) => RegisterScreen(
                             authRepository: widget.authRepository,
+                            professionalsRepo: widget.professionalsRepository,
                           ),
                         ),
                       );

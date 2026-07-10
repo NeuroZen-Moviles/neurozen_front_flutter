@@ -3,6 +3,7 @@ import 'package:neurozen_front/core/network/api_client.dart';
 import 'package:neurozen_front/core/storage/session_storage.dart';
 import 'package:neurozen_front/features/auth/data/auth_repo.dart';
 import 'package:neurozen_front/features/auth/login_screen.dart';
+import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
 import 'package:neurozen_front/features/shell/main_shell.dart';
 
 class AppRoot extends StatefulWidget {
@@ -16,6 +17,7 @@ class _AppRootState extends State<AppRoot> {
   late final SessionStorage storage;
   late final ApiClient apiClient;
   late final AuthRepository authRepository;
+  late final ProfessionalsRepository professionalsRepository;
 
   bool loading = true;
   bool loggedIn = false;
@@ -26,6 +28,7 @@ class _AppRootState extends State<AppRoot> {
     storage = SessionStorage();
     apiClient = ApiClient(storage);
     authRepository = AuthRepository(apiClient: apiClient, storage: storage);
+    professionalsRepository = ProfessionalsRepository(apiClient);
     _bootstrap();
   }
 
@@ -47,15 +50,22 @@ class _AppRootState extends State<AppRoot> {
     if (!loggedIn) {
       return LoginScreen(
         authRepository: authRepository,
+        professionalsRepository: professionalsRepository,
         onLoginSuccess: () => setState(() => loggedIn = true),
       );
     }
 
     return MainShell(
+      professionalsRepository: professionalsRepository,
+
       onLogout: () async {
         await authRepository.logout();
+
         if (!mounted) return;
-        setState(() => loggedIn = false);
+
+        setState(() {
+          loggedIn = false;
+        });
       },
     );
   }

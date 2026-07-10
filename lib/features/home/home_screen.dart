@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/models/patient.dart';
 import 'package:neurozen_front/core/models/psychologist.dart';
+import 'package:neurozen_front/features/home/widgets/professional_completion_card.dart';
 import 'package:neurozen_front/utils/date_format.dart';
 
 class HomePsychologistScreen extends StatelessWidget {
@@ -38,6 +39,14 @@ class HomePsychologistScreen extends StatelessWidget {
           Text(psychologist.specialty),
           const SizedBox(height: 16),
 
+          if (psychologist.bio != null &&
+              psychologist.bio!.isNotEmpty &&
+              psychologist.experience > 0 &&
+              psychologist.price > 0 &&
+              psychologist.availability.isNotEmpty)
+            const ProfileCompletionCard(),
+
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(

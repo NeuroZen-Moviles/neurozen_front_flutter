@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/models/availability_slot.dart';
 import 'package:neurozen_front/core/models/patient.dart';
-import 'package:neurozen_front/core/models/psychologist.dart';
-
-final mockPsychologist = Psychologist(
-  name: 'Dra. Andrea Morales',
-  specialty: 'Psicología Clínica',
-  email: 'andrea.morales@neurozen.app',
-);
 
 final mockPatients = <Patient>[
   Patient(
