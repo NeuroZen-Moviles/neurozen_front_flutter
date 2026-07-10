@@ -29,6 +29,7 @@ class _MainShellState extends State<MainShell> {
   int index = 0;
   Psychologist? psychologist;
   bool loading = true;
+  String? errorMessage;
   final availability = List<AvailabilitySlot>.from(mockAvailability);
 
   @override
@@ -81,9 +82,15 @@ class _MainShellState extends State<MainShell> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      setState(() {
+        loading = false;
+        errorMessage =
+            'No existe un perfil profesional asociado a este usuario';
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se encontró el perfil del psicólogo')),
+      );
     }
   }
 
@@ -93,9 +100,45 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading || psychologist == null) {
+    if (loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    if (errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.person_off_outlined, size: 64),
+
+                const SizedBox(height: 16),
+
+                Text(
+                  errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+
+                const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: widget.onLogout,
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Cerrar sesión'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final pages = [
       HomePsychologistScreen(
         psychologist: psychologist!,
