@@ -30,7 +30,7 @@ class _MainShellState extends State<MainShell> {
   Psychologist? psychologist;
   bool loading = true;
   final availability = List<AvailabilitySlot>.from(mockAvailability);
-  final psychologistId = 'b17ffc67-078d-449d-b9cf-dd5750bde271';
+  final psychologistId = '08d73aee-4d88-4aef-95ab-fa949d334e56';
 
   @override
   void initState() {
@@ -96,7 +96,11 @@ class _MainShellState extends State<MainShell> {
       ),
       PatientsScreen(patients: mockPatients),
       ScheduleScreen(),
-      ProfileScreen(psychologist: psychologist!, onLogout: widget.onLogout, onProfileUpdated: _loadPsychologist),
+      ProfileScreen(
+        psychologist: psychologist!,
+        onLogout: widget.onLogout,
+        onProfileUpdated: _loadPsychologist,
+      ),
     ];
 
     return Scaffold(

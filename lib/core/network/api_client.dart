@@ -8,7 +8,7 @@ class ApiClient {
   ApiClient(this.sessionStorage) {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.88.5:5059',
+        baseUrl: 'https://neurozen-backend-mobile.onrender.com',
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
         headers: {'Content-Type': 'application/json'},
