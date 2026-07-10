@@ -130,6 +130,10 @@ class _MainShellState extends State<MainShell> {
                     onPressed: widget.onLogout,
                     icon: const Icon(Icons.logout),
                     label: const Text('Cerrar sesión'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.redAccent,
+                      side: const BorderSide(color: Colors.redAccent),
+                    ),
                   ),
                 ),
               ],
