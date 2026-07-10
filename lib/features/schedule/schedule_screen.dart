@@ -285,7 +285,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     // Aquí luego mapeas a JSON o string para tu backend.
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Cambios guardados (mock)')));
+    ).showSnackBar(const SnackBar(content: Text('Cambios guardados')));
   }
 
   AvailabilityException _upsertException(DateTime date) {
