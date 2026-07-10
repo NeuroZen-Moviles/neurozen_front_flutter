@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +10,8 @@ class SessionStorage {
   static const _kUserId = 'user_id';
   static const _kIsLoggedIn = 'is_logged_in';
   static const _kAvailabilityCache = 'availability_cache';
+  static const _kProfileCache = 'psychologist_profile_cache';
+  static const _kProfileCompleted = 'profile_completed';
 
   Future<void> saveSession({
     required String token,
@@ -46,5 +50,33 @@ class SessionStorage {
   Future<String?> readAvailabilityCache() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_kAvailabilityCache);
+  }
+
+  Future<void> saveProfileCache(Map<String, dynamic> profile) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_kProfileCache, jsonEncode(profile));
+  }
+
+  Future<Map<String, dynamic>?> readProfileCache() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final raw = prefs.getString(_kProfileCache);
+
+    if (raw == null) return null;
+
+    return Map<String, dynamic>.from(jsonDecode(raw));
+  }
+
+  Future<void> setProfileCompleted(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_kProfileCompleted, value);
+  }
+
+  Future<bool> isProfileCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(_kProfileCompleted) ?? false;
   }
 }

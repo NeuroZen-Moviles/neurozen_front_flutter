@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/models/patient.dart';
 import 'package:neurozen_front/core/models/psychologist.dart';
+import 'package:neurozen_front/core/storage/session_storage.dart';
 import 'package:neurozen_front/features/home/widgets/professional_completion_card.dart';
+import 'package:neurozen_front/features/profile/complete_profile_screen.dart';
 import 'package:neurozen_front/utils/date_format.dart';
 
 class HomePsychologistScreen extends StatelessWidget {
   final Psychologist psychologist;
   final List<Patient> patients;
+  final SessionStorage storage;
+  final Future<void> Function() onProfileUpdated;
 
   const HomePsychologistScreen({
     super.key,
     required this.psychologist,
     required this.patients,
+    required this.storage,
+    required this.onProfileUpdated,
   });
 
   @override
@@ -24,6 +30,11 @@ class HomePsychologistScreen extends StatelessWidget {
               p.nextAppointment.year == DateTime.now().year,
         )
         .length;
+    final incomplete =
+        psychologist.bio == null ||
+        psychologist.bio!.isEmpty ||
+        psychologist.experience == 0 ||
+        psychologist.price == 0;
 
     return SafeArea(
       child: ListView(
@@ -39,12 +50,24 @@ class HomePsychologistScreen extends StatelessWidget {
           Text(psychologist.specialty),
           const SizedBox(height: 16),
 
-          if (psychologist.bio != null &&
-              psychologist.bio!.isNotEmpty &&
-              psychologist.experience > 0 &&
-              psychologist.price > 0 &&
-              psychologist.availability.isNotEmpty)
-            const ProfileCompletionCard(),
+          if (incomplete)
+            ProfileCompletionCard(
+              onPressed: () async {
+                final updated = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CompleteProfileScreen(
+                      psychologist: psychologist,
+                      storage: storage,
+                    ),
+                  ),
+                );
+
+                if (updated == true) {
+                  await onProfileUpdated();
+                }
+              },
+            ),
 
           const SizedBox(height: 16),
           Row(

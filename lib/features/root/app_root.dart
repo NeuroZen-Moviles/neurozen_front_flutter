@@ -57,6 +57,7 @@ class _AppRootState extends State<AppRoot> {
 
     return MainShell(
       professionalsRepository: professionalsRepository,
+      storage: storage,
 
       onLogout: () async {
         await authRepository.logout();

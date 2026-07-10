@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ProfileCompletionCard extends StatelessWidget {
-  const ProfileCompletionCard({super.key});
+  final VoidCallback onPressed;
+
+  const ProfileCompletionCard({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class ProfileCompletionCard extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 12),
 
             const Text(
@@ -31,7 +34,7 @@ class ProfileCompletionCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            LinearProgressIndicator(value: progress),
+            const LinearProgressIndicator(value: progress),
 
             const SizedBox(height: 8),
 
@@ -40,9 +43,7 @@ class ProfileCompletionCard extends StatelessWidget {
             const SizedBox(height: 16),
 
             FilledButton(
-              onPressed: () {
-                // Navegar a CompleteProfileScreen
-              },
+              onPressed: onPressed,
               child: const Text('Completar perfil'),
             ),
           ],

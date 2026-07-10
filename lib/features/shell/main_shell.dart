@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neurozen_front/core/mocks/mock_data.dart';
 import 'package:neurozen_front/core/models/availability_slot.dart';
 import 'package:neurozen_front/core/models/psychologist.dart';
+import 'package:neurozen_front/core/storage/session_storage.dart';
 import 'package:neurozen_front/features/home/home_screen.dart';
 import 'package:neurozen_front/features/patients/patient_screen.dart';
 import 'package:neurozen_front/features/professionals/data/professionals_repo.dart';
@@ -11,10 +12,12 @@ import 'package:neurozen_front/features/schedule/schedule_screen.dart';
 class MainShell extends StatefulWidget {
   final VoidCallback onLogout;
   final ProfessionalsRepository professionalsRepository;
+  final SessionStorage storage;
 
   const MainShell({
     super.key,
     required this.professionalsRepository,
+    required this.storage,
     required this.onLogout,
   });
 
@@ -37,9 +40,25 @@ class _MainShellState extends State<MainShell> {
 
   Future<void> _loadPsychologist() async {
     try {
-      final result = await widget.professionalsRepository.getById(
-        psychologistId,
-      );
+      var result = await widget.professionalsRepository.getById(psychologistId);
+
+      final cache = await widget.storage.readProfileCache();
+
+      if (cache != null) {
+        result = Psychologist(
+          id: result.id,
+          name: result.name,
+          email: result.email,
+          specialty: result.specialty,
+          availability: result.availability,
+          experience: cache['experience'] ?? result.experience,
+          price: cache['price'] ?? result.price,
+          rating: result.rating,
+          reviews: result.reviews,
+          bio: cache['bio'] ?? result.bio,
+          image: result.image,
+        );
+      }
 
       if (!mounted) return;
 
@@ -59,6 +78,10 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
+  Future<void> refreshPsychologist() async {
+    await _loadPsychologist();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (loading || psychologist == null) {
@@ -68,10 +91,12 @@ class _MainShellState extends State<MainShell> {
       HomePsychologistScreen(
         psychologist: psychologist!,
         patients: mockPatients,
+        storage: SessionStorage(),
+        onProfileUpdated: refreshPsychologist,
       ),
       PatientsScreen(patients: mockPatients),
       ScheduleScreen(),
-      ProfileScreen(psychologist: psychologist!, onLogout: widget.onLogout),
+      ProfileScreen(psychologist: psychologist!, onLogout: widget.onLogout, onProfileUpdated: _loadPsychologist),
     ];
 
     return Scaffold(
